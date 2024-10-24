@@ -20,7 +20,7 @@ function AddBookForm({ onBookAdded }) {
     e.preventDefault();
     addBook(book).then(() => {
       alert('Book added successfully');
-      onBookAdded();  // Refresh book list
+      onBookAdded();
     }).catch(error => {
       console.error('Error adding book:', error);
     });

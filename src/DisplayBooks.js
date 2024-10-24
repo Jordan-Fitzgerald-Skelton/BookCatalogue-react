@@ -18,6 +18,7 @@ function BookList({ onEdit }) {
 
   const handleDelete = (id) => {
     deleteBook(id).then(() => {
+      alert('Book DELETED successfully');
       fetchBooks();  // Refresh the list after deletion
     }).catch(error => {
       console.error('Error deleting book:', error);
