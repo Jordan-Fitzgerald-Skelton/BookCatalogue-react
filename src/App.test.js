@@ -4,7 +4,7 @@ import App from './App';
 
 test('renders loading text initially', () => {
   render(<App />);
-  const loadingElement = screen.getByText(/loading/i); // Adjust to your expected content
+  const loadingElement = screen.getByText(/loading/i);
   expect(loadingElement).toBeInTheDocument();
 });
 
