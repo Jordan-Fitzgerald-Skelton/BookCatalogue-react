@@ -48,13 +48,14 @@ function App() {
     setError('');
     try {
       const response = await getBooks();
+      console.log(response.data); // Log the fetched data
       setBooks(response.data);
     } catch (error) {
       setError('Error fetching books');
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleChange = (e) => {
     setBook({ ...book, [e.target.name]: e.target.value });
@@ -141,9 +142,10 @@ function App() {
   };
 
   const handleShowDetails = (bookToShow) => {
+    console.log('Show button clicked for book:', bookToShow);
     setSelectedBook(bookToShow);
     setView('details');
-  };
+  };  
 
   const renderForm = () => (
     <form onSubmit={handleSubmit}>
@@ -164,16 +166,16 @@ function App() {
 
   const renderDetails = () => (
     <div>
-      <h2>{selectedBook.title}</h2>
-      <p><strong>Author:</strong> {selectedBook.author}</p>
-      <p><strong>Description:</strong> {selectedBook.description}</p>
-      <p><strong>Genre:</strong> {selectedBook.genre}</p>
-      <p><strong>Pages:</strong> {selectedBook.pages}</p>
-      <p><strong>Rating:</strong> {selectedBook.rating}</p>
-      <p><strong>Price:</strong> €{selectedBook.price}</p>
+      <h3>{selectedBook.formatted_title}</h3>
+      <p>{selectedBook.formatted_author}</p>
+      <p>{selectedBook.formatted_description}</p>
+      <p>{selectedBook.formatted_genre}</p>
+      <p>{selectedBook.formatted_pages}</p>
+      <p>{selectedBook.formatted_rating}</p>
+      <p>{selectedBook.formatted_price}</p>
       <button onClick={() => setView('list')}>Back to List</button>
     </div>
-  );
+  );  
 
   const renderList = () => (
     <Table striped bordered hover>
@@ -186,18 +188,24 @@ function App() {
         </tr>
       </thead>
       <tbody>
-        {books.map((book, index) => (
-          <tr key={book.id}>
-            <td>{book.title}</td>
-            <td>{book.author}</td>
-            <td>{book.genre}</td>
-            <td>
-              <button className="btn btn-primary" onClick={() => handleShowDetails(book)}>Show</button>
-              <button className="btn btn-warning" onClick={() => handleEdit(book)}>Edit</button>
-              <button className="btn btn-danger" onClick={() => handleDelete(book.id)}>Delete</button>
-            </td>
+        {books.length === 0 ? (
+          <tr>
+            <td colSpan="4">No books found</td>
           </tr>
-        ))}
+        ) : (
+          books.map((book) => (
+            <tr key={book.id}>
+              <td>{book.formatted_title}</td>
+              <td>{book.formatted_author}</td>
+              <td>{book.formatted_genre}</td>
+              <td>
+                <button className="btn btn-primary" onClick={() => handleShowDetails(book)}>Show</button>
+                <button className="btn btn-warning" onClick={() => handleEdit(book)}>Edit</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(book.id)}>Delete</button>
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </Table>
   );  
