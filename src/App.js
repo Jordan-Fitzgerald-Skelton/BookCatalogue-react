@@ -5,7 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Table from 'react-bootstrap/Table';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/books';
+const API_URL = 'http://ec2-44-206-236-102.compute-1.amazonaws.com/books';
 
 // API functions
 export const getBooks = () => axios.get(API_URL);
