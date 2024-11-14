@@ -5,9 +5,12 @@ import Navbar from 'react-bootstrap/Navbar';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+
 import axios from 'axios';
 
-const API_URL = 'http://ec2-44-201-210-248.compute-1.amazonaws.com/books';
+const API_URL = 'http://ec2-3-92-237-62.compute-1.amazonaws.com/books';
 
 // API functions
 export const getBooks = () => axios.get(API_URL);
@@ -172,17 +175,39 @@ function App() {
   );
 
   const renderDetails = () => (
-    <div>
-      <h3>{selectedBook.formatted_title}</h3>
-      <p>{selectedBook.formatted_author}</p>
-      <p>{selectedBook.formatted_description}</p>
-      <p>{selectedBook.formatted_genre}</p>
-      <p>{selectedBook.formatted_pages}</p>
-      <p>{selectedBook.formatted_rating}</p>
-      <p>{selectedBook.formatted_price}</p>
-      <button onClick={() => setView('list')}>Back to List</button>
-    </div>
-  );  
+    <Card className="detail-card m-3 p-3 shadow-sm">
+      <Card.Header as="h3" className="text-center text-primary">
+        {selectedBook.formatted_title}
+      </Card.Header>
+      <Card.Body>
+        <ListGroup variant="flush">
+          <ListGroup.Item>
+            <strong>Author:</strong> {selectedBook.formatted_author}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Description:</strong> {selectedBook.formatted_description}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Genre:</strong> {selectedBook.formatted_genre}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Pages:</strong> {selectedBook.formatted_pages}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Rating:</strong> {selectedBook.formatted_rating}
+          </ListGroup.Item>
+          <ListGroup.Item>
+            <strong>Price:</strong> ${selectedBook.formatted_price}
+          </ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+      <Card.Footer className="text-center">
+        <Button variant="primary" onClick={() => setView('list')}>
+          Back to List
+        </Button>
+      </Card.Footer>
+    </Card>
+  ); 
 
   const renderList = () => (
     <Table striped bordered hover>
