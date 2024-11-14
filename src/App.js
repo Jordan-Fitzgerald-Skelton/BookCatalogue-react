@@ -10,7 +10,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
 
-const API_URL = 'http://ec2-3-92-237-62.compute-1.amazonaws.com/books';
+const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
 
 // API functions
 export const getBooks = () => axios.get(API_URL);
