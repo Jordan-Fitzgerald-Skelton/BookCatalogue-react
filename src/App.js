@@ -3,9 +3,11 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
-const API_URL = 'http://ec2-44-206-236-102.compute-1.amazonaws.com/books';
+const API_URL = 'http://ec2-44-201-210-248.compute-1.amazonaws.com/books';
 
 // API functions
 export const getBooks = () => axios.get(API_URL);
@@ -148,20 +150,25 @@ function App() {
   };  
 
   const renderForm = () => (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className="p-3 border rounded bg-light">
+      {error && <p className="text-danger">{error}</p>}
       {Object.keys(book).map((key) => (
-        <input
-          key={key}
-          name={key}
-          value={book[key]}
-          onChange={handleChange}
-          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          type={key === 'pages' || key === 'rating' || key === 'price' ? 'number' : 'text'}
-          required // Make inputs required
-        />
+        <Form.Group className="mb-3" controlId={`form${key}`} key={key}>
+          <Form.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</Form.Label>
+          <Form.Control
+            type={key === 'pages' || key === 'rating' || key === 'price' ? 'number' : 'text'}
+            name={key}
+            value={book[key]}
+            onChange={handleChange}
+            placeholder={`Enter ${key}`}
+            required
+          />
+        </Form.Group>
       ))}
-      <button type="submit">{editingBookId ? 'Update Book' : 'Add Book'}</button>
-    </form>
+      <Button variant="primary" type="submit">
+      {editingBookId ? 'Update Book' : 'Add Book'}
+    </Button>
+  </Form>
   );
 
   const renderDetails = () => (
@@ -179,14 +186,6 @@ function App() {
 
   const renderList = () => (
     <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Genre</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
       <tbody>
         {books.length === 0 ? (
           <tr>
