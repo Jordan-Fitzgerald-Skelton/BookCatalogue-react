@@ -9,7 +9,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
-import GoogleBooksSearch from './GoogleBookSearch'; // Import the GoogleBooksSearch component
+import GoogleBooksSearch from './GoogleBooksSearch'; // Import the GoogleBooksSearch component
 
 // Define the base URL for API calls
 const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
@@ -66,6 +66,100 @@ function App() {
     } finally {
       setLoading(false); // Hide loading indicator
     }
+  };
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    setBook({ ...book, [e.target.name]: e.target.value }); // Update the relevant field
+  };
+
+  // Handle form submission for adding or updating a book
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(''); // Clear any existing error
+
+    // Form validation logic
+    if (!book.title) {
+      setError('Title is required');
+      return;
+    }
+    if (!book.author) {
+      setError('Author is required');
+      return;
+    }
+    if (!book.genre) {
+      setError('Genre is required');
+      return;
+    }
+    if (book.pages < 1 || isNaN(book.pages)) {
+      setError('Pages must be a positive number');
+      return;
+    }
+    if (book.rating < 0 || book.rating > 5 || isNaN(book.rating)) {
+      setError('Rating must be between 0 and 5');
+      return;
+    }
+    if (book.price < 0 || isNaN(book.price)) {
+      setError('Price must be a non-negative number');
+      return;
+    }
+
+    try {
+      if (editingBookId) {
+        // If editing, update the book
+        await updateBook(editingBookId, book);
+        alert('Book updated successfully');
+      } else {
+        // If adding, create a new book
+        await addBook(book);
+        alert('Book added successfully');
+      }
+      fetchBooks(); // Refresh the book list
+      resetForm(); // Clear the form
+      setView('list'); // Switch back to list view
+    } catch (error) {
+      setError('Error saving book'); // Show error message
+    }
+  };
+
+  // Reset the form and clear the current editing book ID
+  const resetForm = () => {
+    setBook({
+      title: '',
+      author: '',
+      description: '',
+      genre: '',
+      pages: '',
+      rating: '',
+      price: ''
+    });
+    setEditingBookId(null);
+  };
+
+  // Handle editing of a book (populate the form with existing data)
+  const handleEdit = async (bookToEdit) => {
+    setEditingBookId(bookToEdit.id);
+    setBook(bookToEdit); // Populate the form with book data
+    setView('form'); // Switch to form view
+  };
+
+  // Handle deleting a book
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this book?')) {
+      try {
+        await deleteBook(id); // Call API to delete the book
+        alert('Book deleted successfully');
+        fetchBooks(); // Refresh the book list
+      } catch (error) {
+        setError('Error deleting book'); // Show error message
+      }
+    }
+  };
+
+  // Show details of the selected book
+  const handleShowDetails = (bookToShow) => {
+    setSelectedBook(bookToShow); // Set the selected book
+    setView('details'); // Switch to details view
   };
 
   // Handle navigation and switching views
