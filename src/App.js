@@ -10,25 +10,27 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
 
+// Define the base URL for API calls
 const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
 
-// API functions
-export const getBooks = () => axios.get(API_URL);
+// Functions to interact with the API
+export const getBooks = () => axios.get(API_URL); // Fetch all books
 export const addBook = async (bookData) => {
   try {
-    const response = await axios.post(API_URL, bookData);
+    const response = await axios.post(API_URL, bookData); // Add a new book
     return response.data;
   } catch (error) {
     throw new Error('Error adding book');
   }
 };
-export const updateBook = (id, book) => axios.put(`${API_URL}/${id}`, book);
-export const deleteBook = (id) => axios.delete(`${API_URL}/${id}`);
-export const getBook = (id) => axios.get(`${API_URL}/${id}`);
+export const updateBook = (id, book) => axios.put(`${API_URL}/${id}`, book); // Update an existing book
+export const deleteBook = (id) => axios.delete(`${API_URL}/${id}`); // Delete a book by ID
+export const getBook = (id) => axios.get(`${API_URL}/${id}`); // Fetch a specific book by ID
 
 function App() {
-  const [books, setBooks] = useState([]);
-  const [book, setBook] = useState({
+  // State variables to manage application data and UI
+  const [books, setBooks] = useState([]); // List of all books
+  const [book, setBook] = useState({ // State for the book form
     title: '',
     author: '',
     description: '',
@@ -37,35 +39,38 @@ function App() {
     rating: '',
     price: ''
   });
-  const [view, setView] = useState('list');
-  const [editingBookId, setEditingBookId] = useState(null);
-  const [selectedBook, setSelectedBook] = useState(null);
-  const [loading, setLoading] = useState(false); // Loading state
-  const [error, setError] = useState(''); // Error state
+  const [view, setView] = useState('list'); // Current view ('list', 'form', 'details')
+  const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
+  const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
+  const [loading, setLoading] = useState(false); // Loading state for asynchronous operations
+  const [error, setError] = useState(''); // Error message state
 
-  // Fetch books from API
+  // Fetch books from the API when the component mounts
   useEffect(() => {
     fetchBooks();
   }, []);
 
+  // Function to fetch all books and update state
   const fetchBooks = async () => {
-    setLoading(true);
-    setError('');
+    setLoading(true); // Show loading indicator
+    setError(''); // Clear any previous errors
     try {
       const response = await getBooks();
-      console.log(response.data); // Log the fetched data
-      setBooks(response.data);
+      console.log(response.data); // Log the fetched data for debugging
+      setBooks(response.data); // Update books state with fetched data
     } catch (error) {
-      setError('Error fetching books');
+      setError('Error fetching books'); // Show error message on failure
     } finally {
-      setLoading(false);
+      setLoading(false); // Hide loading indicator
     }
-  };  
-
-  const handleChange = (e) => {
-    setBook({ ...book, [e.target.name]: e.target.value });
   };
 
+  // Function to handle input changes in the book form
+  const handleChange = (e) => {
+    setBook({ ...book, [e.target.name]: e.target.value }); // Update the relevant field
+  };
+
+  // Reset the form and clear the current editing book ID
   const resetForm = () => {
     setBook({
       title: '',
@@ -79,11 +84,12 @@ function App() {
     setEditingBookId(null);
   };
 
+  // Handle form submission for adding or updating a book
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    // Validation Logic
+    setError(''); // Clear any existing error
+
+    // Form validation logic
     if (!book.title) {
       setError('Title is required');
       return;
@@ -108,53 +114,56 @@ function App() {
       setError('Price must be a non-negative number');
       return;
     }
-  
-    // Reset any existing error before processing
-    setError('');
-  
+
     try {
       if (editingBookId) {
+        // If editing, update the book
         await updateBook(editingBookId, book);
         alert('Book updated successfully');
       } else {
+        // If adding, create a new book
         await addBook(book);
         alert('Book added successfully');
       }
-      fetchBooks();
-      resetForm();
-      setView('list');
+      fetchBooks(); // Refresh the book list
+      resetForm(); // Clear the form
+      setView('list'); // Switch back to list view
     } catch (error) {
-      setError('Error saving book');
+      setError('Error saving book'); // Show error message
     }
-  };  
-
-  const handleEdit = async (bookToEdit) => {
-    setEditingBookId(bookToEdit.id);
-    setBook(bookToEdit);
-    setView('form');
   };
 
+  // Handle edit button click and populate the form with selected book data
+  const handleEdit = async (bookToEdit) => {
+    setEditingBookId(bookToEdit.id);
+    setBook(bookToEdit); // Populate the form with book data
+    setView('form'); // Switch to form view
+  };
+
+  // Handle delete button click
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
       try {
-        await deleteBook(id);
+        await deleteBook(id); // Call API to delete the book
         alert('Book deleted successfully');
-        fetchBooks();
+        fetchBooks(); // Refresh the book list
       } catch (error) {
-        setError('Error deleting book');
+        setError('Error deleting book'); // Show error message
       }
     }
   };
 
+  // Show details of the selected book
   const handleShowDetails = (bookToShow) => {
     console.log('Show button clicked for book:', bookToShow);
-    setSelectedBook(bookToShow);
-    setView('details');
-  };  
+    setSelectedBook(bookToShow); // Set the selected book
+    setView('details'); // Switch to details view
+  };
 
+  // Render the book form
   const renderForm = () => (
     <Form onSubmit={handleSubmit} className="p-3 border rounded bg-light">
-      {error && <p className="text-danger">{error}</p>}
+      {error && <p className="text-danger">{error}</p>} {/* Show error message */}
       {Object.keys(book).map((key) => (
         <Form.Group className="mb-3" controlId={`form${key}`} key={key}>
           <Form.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</Form.Label>
@@ -169,11 +178,12 @@ function App() {
         </Form.Group>
       ))}
       <Button variant="primary" type="submit">
-      {editingBookId ? 'Update Book' : 'Add Book'}
-    </Button>
-  </Form>
+        {editingBookId ? 'Update Book' : 'Add Book'}
+      </Button>
+    </Form>
   );
 
+  // Render the details view
   const renderDetails = () => (
     <Card className="detail-card m-3 p-3 shadow-sm">
       <Card.Header as="h3" className="text-center text-primary">
@@ -207,8 +217,9 @@ function App() {
         </Button>
       </Card.Footer>
     </Card>
-  ); 
+  );
 
+  // Render the list of books
   const renderList = () => (
     <Table striped bordered hover>
       <tbody>
@@ -232,10 +243,11 @@ function App() {
         )}
       </tbody>
     </Table>
-  );  
+  );
 
   return (
     <div>
+      {/* Navigation bar */}
       <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
           <Navbar.Brand href="#home">Book Catalogue</Navbar.Brand>
@@ -249,9 +261,11 @@ function App() {
         </Container>
       </Navbar>
 
+      {/* Loading and error messages */}
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
+      {/* Render different views based on the current state */}
       {view === 'form' && renderForm()}
       {view === 'details' && selectedBook && renderDetails()}
       {view === 'list' && renderList()}
