@@ -9,7 +9,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
-import GoogleBooksSearch from './GoogleBooksSearch'; // Import the GoogleBooksSearch component
+import GoogleBooksSearch from './GoogleBookSearch'; // Import the GoogleBooksSearch component
 
 // Define the base URL for API calls
 const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
