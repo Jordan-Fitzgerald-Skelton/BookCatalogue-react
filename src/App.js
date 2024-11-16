@@ -29,15 +29,15 @@ export const getBook = (id) => axios.get(`${API_URL}/${id}`); // Fetch a specifi
 function App() {
   // State variables to manage application data and UI
   const [books, setBooks] = useState([]); // List of all books
-  const [book, setBook] = useState({ // State for the book form
-    formatted_title: '',
-    formatted_author: '',
-    formatted_description: '',
-    formatted_genre: '',
-    formatted_pages: '',
-    formatted_rating: '',
-    formatted_price: ''
-  });
+  const [book, setBook] = useState({
+    title: '',
+    author: '',
+    description: '',
+    genre: '',
+    pages: '',
+    rating: '',
+    price: ''
+  });    
   const [view, setView] = useState('list'); // Current view ('list', 'form', 'details', 'search')
   const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
   const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
@@ -68,8 +68,8 @@ function App() {
 
   // Handle form input changes
   const handleChange = (e) => {
-    setBook({ ...book, [e.target.name]: e.target.value }); // Update the relevant field
-  };
+    setBook({ ...book, [e.target.name]: e.target.value });
+  };  
 
   // Handle form submission for adding or updating a book
   const handleSubmit = async (e) => {
@@ -77,14 +77,14 @@ function App() {
     setError(''); // Clear any existing error
 
     const payload = {
-      formatted_title: String(book.title || ''), // Ensure it's a string
-      formatted_author: String(book.author || ''), 
-      formatted_description: String(book.description || ''),
-      formatted_genre: String(book.genre || ''),
-      formatted_pages: parseInt(book.pages, 10) || 0, // Ensure it's a number
-      formatted_rating: parseFloat(book.rating) || 0, // Ensure it's a float
-      formatted_price: parseFloat(book.price) || 0 // Ensure it's a float
-    };
+      title: book.title || '',
+      author: book.author || '',
+      description: book.description || '',
+      genre: book.genre || '',
+      pages: parseInt(book.pages, 10) || 0,
+      rating: parseFloat(book.rating) || 0,
+      price: parseFloat(book.price) || 0
+    };        
 
     console.log('Payload being sent:', payload);
 
@@ -95,7 +95,8 @@ function App() {
         alert('Book updated successfully');
       } else {
         // If adding, create a new book
-        await addBook(book);
+        await addBook(payload);
+        resetForm(); // Clears the form
         alert('Book added successfully');
       }
       fetchBooks(); // Refresh the book list
@@ -121,11 +122,19 @@ function App() {
   };
 
   // Handle editing of a book (populate the form with existing data)
-  const handleEdit = async (bookToEdit) => {
+  const handleEdit = (bookToEdit) => {
     setEditingBookId(bookToEdit.id);
-    setBook(bookToEdit); // Populate the form with book data
-    setView('form'); // Switch to form view
-  };
+    setBook({
+      title: bookToEdit.title || '',
+      author: bookToEdit.author || '',
+      description: bookToEdit.description || '',
+      genre: bookToEdit.genre || '',
+      pages: bookToEdit.pages || '',
+      rating: bookToEdit.rating || '',
+      price: bookToEdit.price || ''
+    });
+    setView('form');
+  };    
 
   // Handle deleting a book
   const handleDelete = async (id) => {
@@ -185,24 +194,13 @@ function App() {
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">
-          <ListGroup.Item>
-            <strong>Author:</strong> {selectedBook.formatted_author}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Description:</strong> {selectedBook.formatted_description}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Genre:</strong> {selectedBook.formatted_genre}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Pages:</strong> {selectedBook.formatted_pages}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Rating:</strong> {selectedBook.formatted_rating}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Price:</strong> ${selectedBook.formatted_price}
-          </ListGroup.Item>
+          <ListGroup.Item><strong>Title:</strong> {selectedBook.title}</ListGroup.Item>
+          <ListGroup.Item><strong>Author:</strong> {selectedBook.author}</ListGroup.Item>
+          <ListGroup.Item><strong>Description:</strong> {selectedBook.description}</ListGroup.Item>
+          <ListGroup.Item><strong>Genre:</strong> {selectedBook.genre}</ListGroup.Item>
+          <ListGroup.Item><strong>Pages:</strong> {selectedBook.pages}</ListGroup.Item>
+          <ListGroup.Item><strong>Rating:</strong> {selectedBook.rating}</ListGroup.Item>
+          <ListGroup.Item><strong>Price:</strong> ${selectedBook.price}</ListGroup.Item>
         </ListGroup>
       </Card.Body>
       <Card.Footer className="text-center">
@@ -216,6 +214,14 @@ function App() {
   // Render the list of books
   const renderList = () => (
     <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Genre</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
       <tbody>
         {books.length === 0 ? (
           <tr>
@@ -224,9 +230,9 @@ function App() {
         ) : (
           books.map((book) => (
             <tr key={book.id}>
-              <td>{book.formatted_title}</td>
-              <td>{book.formatted_author}</td>
-              <td>{book.formatted_genre}</td>
+              <td>{book.title}</td>
+              <td>{book.author}</td>
+              <td>{book.genre}</td>
               <td>
                 <button className="btn btn-primary" onClick={() => handleShowDetails(book)}>Show</button>
                 <button className="btn btn-warning" onClick={() => handleEdit(book)}>Edit</button>
