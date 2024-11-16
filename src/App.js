@@ -9,7 +9,6 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
-import GoogleBooksSearch from './GoogleBookSearch'; // Import the GoogleBooksSearch component
 
 // Define the base URL for API calls
 const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
@@ -40,7 +39,7 @@ function App() {
     rating: '',
     price: ''
   });
-  const [view, setView] = useState('list'); // Current view ('list', 'form', 'details', 'search')
+  const [view, setView] = useState('list'); // Current view ('list', 'form', 'details')
   const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
   const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
   const [loading, setLoading] = useState(false); // Loading state for asynchronous operations
@@ -48,10 +47,8 @@ function App() {
 
   // Fetch books from the API when the component mounts
   useEffect(() => {
-    if (view === 'list') {
-      fetchBooks();
-    }
-  }, [view]);
+    fetchBooks();
+  }, []);
 
   // Function to fetch all books and update state
   const fetchBooks = async () => {
@@ -68,16 +65,29 @@ function App() {
     }
   };
 
-  // Handle form input changes
+  // Function to handle input changes in the book form
   const handleChange = (e) => {
     setBook({ ...book, [e.target.name]: e.target.value }); // Update the relevant field
+  };
+
+  // Reset the form and clear the current editing book ID
+  const resetForm = () => {
+    setBook({
+      title: '',
+      author: '',
+      description: '',
+      genre: '',
+      pages: '',
+      rating: '',
+      price: ''
+    });
+    setEditingBookId(null);
   };
 
   // Handle form submission for adding or updating a book
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear any existing error
-
     // Form validation logic
     if (!book.title) {
       setError('Title is required');
@@ -103,7 +113,6 @@ function App() {
       setError('Price must be a non-negative number');
       return;
     }
-
     try {
       if (editingBookId) {
         // If editing, update the book
@@ -122,28 +131,14 @@ function App() {
     }
   };
 
-  // Reset the form and clear the current editing book ID
-  const resetForm = () => {
-    setBook({
-      title: '',
-      author: '',
-      description: '',
-      genre: '',
-      pages: '',
-      rating: '',
-      price: ''
-    });
-    setEditingBookId(null);
-  };
-
-  // Handle editing of a book (populate the form with existing data)
+  // Handle edit button click and populate the form with selected book data
   const handleEdit = async (bookToEdit) => {
     setEditingBookId(bookToEdit.id);
     setBook(bookToEdit); // Populate the form with book data
     setView('form'); // Switch to form view
   };
 
-  // Handle deleting a book
+  // Handle delete button click
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
       try {
@@ -158,16 +153,9 @@ function App() {
 
   // Show details of the selected book
   const handleShowDetails = (bookToShow) => {
+    console.log('Show button clicked for book:', bookToShow);
     setSelectedBook(bookToShow); // Set the selected book
     setView('details'); // Switch to details view
-  };
-
-  // Handle navigation and switching views
-  const handleNavLinkClick = (viewName) => {
-    setView(viewName);
-    if (viewName !== 'search') {
-      setSelectedBook(null); // Clear selected book when switching views
-    }
   };
 
   // Render the book form
@@ -264,9 +252,8 @@ function App() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link onClick={() => handleNavLinkClick('list')}>Home</Nav.Link>
-              <Nav.Link onClick={() => handleNavLinkClick('form')}>Add New Book</Nav.Link>
-              <Nav.Link onClick={() => handleNavLinkClick('search')}>Search Google Books</Nav.Link> {/* New tab */}
+              <Nav.Link onClick={() => { resetForm(); setView('list'); }}>Home</Nav.Link>
+              <Nav.Link onClick={() => { resetForm(); setView('form'); }}>Add New Book</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -280,9 +267,7 @@ function App() {
       {view === 'form' && renderForm()}
       {view === 'details' && selectedBook && renderDetails()}
       {view === 'list' && renderList()}
-      {view === 'search' && <GoogleBooksSearch />} {/* Render GoogleBooksSearch when the tab is selected */}
     </div>
   );
 }
-
 export default App;
