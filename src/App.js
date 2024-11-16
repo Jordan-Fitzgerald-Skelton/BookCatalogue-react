@@ -158,9 +158,17 @@ function App() {
 
   // Show details of the selected book
   const handleShowDetails = (bookToShow) => {
-    setSelectedBook(bookToShow); // Set the selected book
-    setView('details'); // Switch to details view
-  };
+    setSelectedBook({
+      formatted_title: bookToShow.title || "No Title",
+      formatted_author: bookToShow.author || "Unknown Author",
+      formatted_description: bookToShow.description || "No Description",
+      formatted_genre: bookToShow.genre || "N/A",
+      formatted_pages: bookToShow.pages || "N/A",
+      formatted_rating: bookToShow.rating || "N/A",
+      formatted_price: bookToShow.price || "N/A"
+    });
+    setView('details');
+  };  
 
   // Handle navigation and switching views
   const handleNavLinkClick = (viewName) => {

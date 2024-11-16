@@ -38,15 +38,20 @@ const GoogleBooksSearch = () => {
       </Button>
       {loading && <p>Loading...</p>}
       <ListGroup>
-        {results.map((book) => (
-          <ListGroup.Item key={book.id}>
-            <strong>{book.volumeInfo.title}</strong> by {book.volumeInfo.authors?.join(', ')}
-            <br />
-            <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
-              More Info
-            </a>
-          </ListGroup.Item>
-        ))}
+        {results.map((book) => {
+          const title = book.volumeInfo?.title || "No Title Available";
+          const authors = book.volumeInfo?.authors?.join(', ') || "Unknown Author";
+          const infoLink = book.volumeInfo?.infoLink || "#";
+          return (
+            <ListGroup.Item key={book.id}>
+              <strong>{title}</strong> by {authors}
+              <br />
+              <a href={infoLink} target="_blank" rel="noopener noreferrer">
+                More Info
+              </a>
+            </ListGroup.Item>
+            );
+        })}
       </ListGroup>
     </div>
   );
