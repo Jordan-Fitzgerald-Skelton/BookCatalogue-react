@@ -27,6 +27,7 @@ function App() {
   const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
   const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
   const [error, setError] = useState(''); // Error message state
+  const [loading, setLoading] = useState(false); // Loading state to track fetching data
 
   // Fetch books from the API when the component mounts
   useEffect(() => {
@@ -38,11 +39,14 @@ function App() {
   // Fetch books and handle loading/error
   const fetchBooks = async () => {
     setError('');
+    setLoading(true); // Set loading to true when fetching data
     try {
       const response = await getBooks();
       setBooks(response.data); // Set books in state
     } catch (error) {
       setError('Error fetching books');
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
 
