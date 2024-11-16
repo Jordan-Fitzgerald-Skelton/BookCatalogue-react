@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { getBooks, addBook, updateBook, deleteBook, getBook } from './api/books'; // Import the API functions
+import { getBooks, addBook, updateBook, deleteBook } from './api/books'; // Removed getBook since it's not used
 
 import GoogleBooksSearch from './GoogleBookSearch'; // Import the GoogleBooksSearch component
 
@@ -26,7 +26,6 @@ function App() {
   const [view, setView] = useState('list'); // Current view ('list', 'form', 'details', 'search')
   const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
   const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
-  const [loading, setLoading] = useState(false); // Loading state for async operations
   const [error, setError] = useState(''); // Error message state
 
   // Fetch books from the API when the component mounts
@@ -38,15 +37,12 @@ function App() {
 
   // Fetch books and handle loading/error
   const fetchBooks = async () => {
-    setLoading(true);
     setError('');
     try {
       const response = await getBooks();
       setBooks(response.data); // Set books in state
     } catch (error) {
       setError('Error fetching books');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -142,7 +138,6 @@ function App() {
             name={key}
             value={book[key]}
             onChange={handleChange}
-            placeholder={`Enter ${key}`}
             required
           />
         </Form.Group>
@@ -151,28 +146,6 @@ function App() {
         {editingBookId ? 'Update Book' : 'Add Book'}
       </Button>
     </Form>
-  );
-
-  // Render details view
-  const renderDetails = () => (
-    <Card className="detail-card m-3 p-3 shadow-sm">
-      <Card.Header as="h3" className="text-center text-primary">
-        {selectedBook.formatted_title}
-      </Card.Header>
-      <Card.Body>
-        <ListGroup variant="flush">
-          <ListGroup.Item><strong>Author:</strong> {selectedBook.formatted_author}</ListGroup.Item>
-          <ListGroup.Item><strong>Description:</strong> {selectedBook.formatted_description}</ListGroup.Item>
-          <ListGroup.Item><strong>Genre:</strong> {selectedBook.formatted_genre}</ListGroup.Item>
-          <ListGroup.Item><strong>Pages:</strong> {selectedBook.formatted_pages}</ListGroup.Item>
-          <ListGroup.Item><strong>Rating:</strong> {selectedBook.formatted_rating}</ListGroup.Item>
-          <ListGroup.Item><strong>Price:</strong> ${selectedBook.formatted_price}</ListGroup.Item>
-        </ListGroup>
-      </Card.Body>
-      <Card.Footer className="text-center">
-        <Button variant="primary" onClick={() => setView('list')}>Back to List</Button>
-      </Card.Footer>
-    </Card>
   );
 
   // Render book list
@@ -199,13 +172,29 @@ function App() {
     </Table>
   );
 
+  // Render book details
+  const renderDetails = () => (
+    <Card>
+      <Card.Body>
+        <Card.Title>{selectedBook?.title}</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">{selectedBook?.author}</Card.Subtitle>
+        <Card.Text>{selectedBook?.description}</Card.Text>
+        <ListGroup variant="flush">
+          <ListGroup.Item>Genre: {selectedBook?.genre}</ListGroup.Item>
+          <ListGroup.Item>Pages: {selectedBook?.pages}</ListGroup.Item>
+          <ListGroup.Item>Rating: {selectedBook?.rating}</ListGroup.Item>
+          <ListGroup.Item>Price: ${selectedBook?.price}</ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+    </Card>
+  );
+
   return (
     <div>
-      {/* Navigation bar */}
-      <Navbar expand="lg" className="bg-body-tertiary">
+      <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand href="#home">Book Catalogue</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Brand>Book Catalogue</Navbar.Brand>
+          <Navbar.Toggle />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav>
               <Nav.Link onClick={() => handleNavLinkClick('list')}>Home</Nav.Link>
