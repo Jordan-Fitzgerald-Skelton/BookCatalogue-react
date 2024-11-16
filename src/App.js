@@ -149,28 +149,34 @@ function App() {
   );
 
   // Render book list
-  const renderList = () => (
-    <Table striped bordered hover>
-      <tbody>
-        {books.length === 0 ? (
-          <tr><td colSpan="4">No books found</td></tr>
-        ) : (
-          books.map((book) => (
-            <tr key={book.id}>
-              <td>{book.formatted_title}</td>
-              <td>{book.formatted_author}</td>
-              <td>{book.formatted_genre}</td>
-              <td>
-                <button className="btn btn-primary" onClick={() => handleShowDetails(book)}>Show</button>
-                <button className="btn btn-warning" onClick={() => handleEdit(book)}>Edit</button>
-                <button className="btn btn-danger" onClick={() => handleDelete(book.id)}>Delete</button>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </Table>
-  );
+  const renderList = () => {
+    if (loading) {
+      return <div>Loading...</div>; // Ensure this is rendered when loading is true
+    }
+  
+    return (
+      <Table striped bordered hover>
+        <tbody>
+          {books.length === 0 ? (
+            <tr><td colSpan="4">No books found</td></tr>
+          ) : (
+            books.map((book) => (
+              <tr key={book.id}>
+                <td>{book.formatted_title}</td>
+                <td>{book.formatted_author}</td>
+                <td>{book.formatted_genre}</td>
+                <td>
+                  <button className="btn btn-primary" onClick={() => handleShowDetails(book)}>Show</button>
+                  <button className="btn btn-warning" onClick={() => handleEdit(book)}>Edit</button>
+                  <button className="btn btn-danger" onClick={() => handleDelete(book.id)}>Delete</button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </Table>
+    );
+  };  
 
   // Render book details
   const renderDetails = () => (
