@@ -1,6 +1,13 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+
+// Mock API response if needed
+jest.mock('./api', () => ({
+  fetchData: jest.fn(() =>
+    Promise.resolve({ title: 'Book Catalogue' })
+  ),
+}));
 
 test('renders loading text initially', () => {
   render(<App />);
@@ -8,10 +15,10 @@ test('renders loading text initially', () => {
   expect(loadingElement).toBeInTheDocument();
 });
 
-test('renders the app title', async () => {
+test('renders the app title after loading', async () => {
   render(<App />);
-  
-  // Wait for the app to finish loading data
-  const titleElement = await screen.findByText(/book catalogue/i); // Adjust if the title is different
+
+  // Wait for the app to finish loading
+  const titleElement = await screen.findByText(/book catalogue/i);
   expect(titleElement).toBeInTheDocument();
 });
