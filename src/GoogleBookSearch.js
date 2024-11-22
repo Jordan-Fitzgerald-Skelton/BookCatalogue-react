@@ -59,7 +59,7 @@ const GoogleBooksSearch = () => {
         {results.map((book) => (
           <ListGroup.Item key={book.id}> {/* Each book result is displayed as a ListGroup item */}
             <strong>{book.volumeInfo.title}</strong> {/* Display the book title */}
-            by {book.volumeInfo.authors?.join(', ')} {/* Display authors (if any) */}
+            by {book.volumeInfo.authors?.join(', ')} {/* Display the author*/}
             <br />
             {/* Link to more information about the book */}
             <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
