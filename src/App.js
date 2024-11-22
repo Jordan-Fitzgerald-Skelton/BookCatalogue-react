@@ -20,7 +20,7 @@ export const addBook = async (bookData) => {
     const response = await axios.post(API_URL, bookData); // Add a new book
     return response.data;
   } catch (error) {
-    throw new Error('Error adding book');
+    throw new Error(`Error adding book: ${error.response?.data?.message || error.message}`);
   }
 };
 export const updateBook = (id, book) => axios.put(`${API_URL}/${id}`, book); // Update an existing book
