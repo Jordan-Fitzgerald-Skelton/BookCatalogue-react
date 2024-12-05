@@ -190,17 +190,17 @@ function App() {
   const renderDetails = () => (
     <Card className="detail-card m-3 p-3 shadow-sm">
       <Card.Header as="h3" className="text-center text-primary">
-        {selectedBook.formatted_title}
+        {selectedBook.formatted_title} {/* Use formatted title */}
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">
-          <ListGroup.Item><strong>Title:</strong> {selectedBook.title}</ListGroup.Item>
+          <ListGroup.Item><strong>Title:</strong> {selectedBook.formatted_title}</ListGroup.Item>
           <ListGroup.Item><strong>Author:</strong> {selectedBook.author}</ListGroup.Item>
           <ListGroup.Item><strong>Description:</strong> {selectedBook.description}</ListGroup.Item>
           <ListGroup.Item><strong>Genre:</strong> {selectedBook.genre}</ListGroup.Item>
           <ListGroup.Item><strong>Pages:</strong> {selectedBook.pages}</ListGroup.Item>
-          <ListGroup.Item><strong>Rating:</strong> {selectedBook.rating}</ListGroup.Item>
-          <ListGroup.Item><strong>Price:</strong> ${selectedBook.price}</ListGroup.Item>
+          <ListGroup.Item><strong>Rating:</strong> {selectedBook.formatted_rating}</ListGroup.Item> {/* Use formatted rating */}
+          <ListGroup.Item><strong>Price:</strong> {selectedBook.formatted_price}</ListGroup.Item> {/* Use formatted price */}
         </ListGroup>
       </Card.Body>
       <Card.Footer className="text-center">
@@ -210,7 +210,7 @@ function App() {
       </Card.Footer>
     </Card>
   );
-
+  
   // Render the list of books
   const renderList = () => (
     <Table striped bordered hover>
@@ -225,12 +225,12 @@ function App() {
       <tbody>
         {books.length === 0 ? (
           <tr>
-            <td colSpan="4">No books found</td>
+            <td colSpan="5">No books found</td>
           </tr>
         ) : (
           books.map((book) => (
             <tr key={book.id}>
-              <td>{book.title}</td>
+              <td>{book.formatted_title}</td> {/* Use formatted title */}
               <td>{book.author}</td>
               <td>{book.genre}</td>
               <td>
