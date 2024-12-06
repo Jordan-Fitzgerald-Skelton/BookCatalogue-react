@@ -5,32 +5,33 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import axios from 'axios';
 
 const GoogleBooksSearch = () => {
-  // State to hold the search query input from the user
+  //Holds the search query
   const [query, setQuery] = useState('');
 
-  // State to hold the search results (books data)
+  //Holds the search results
   const [results, setResults] = useState([]);
 
-  // State to manage the loading state for when data is being fetched
+  //Loading state for when data is being fetched
   const [loading, setLoading] = useState(false);
 
-  // Function that is triggered when the search button is clicked
+  //Triggered when the search button is clicked
   const handleSearch = async () => {
-    if (!query) return; // If empty then exit
-    setLoading(true); // Set loading to true if data is being fetched
+    if (!query) return;
+    setLoading(true);
     try {
-      // endpoint to call to get the data
+      //Endpoint to call to get the data
       const response = await axios.get('http://ec2-98-84-73-133.compute-1.amazonaws.com/books/search', {
-        params: { q: query }, // Send query as a parameter to the API
+         //Send the query as a parameter to the API
+        params: { q: query }
       });
 
-      // Set the response data to the results state (if response contains data)
+      //Sets the response data to the results state
       setResults(response.data.items || []);
     } catch (error) {
-      // If there's an error, show an alert message
       alert('Error fetching data from Google Books API');
     } finally {
-      setLoading(false); // Set loading state to false when request is done
+      //Sets the loading state to false when request is done
+      setLoading(false);
     }
   };
 
@@ -38,12 +39,13 @@ const GoogleBooksSearch = () => {
     <div className="p-3">
       <h2>Search Google Books</h2>
 
-      {/* Input field to enter the book title or author */}
+      {/*Input fort he book title or author*/}
       <Form.Control
         type="text"
         placeholder="Enter book title or author"
-        value={query} // Bind the input value to the query state
-        onChange={(e) => setQuery(e.target.value)} // Update query state when the user types
+        value={query}
+        //Updates the query state when the user types
+        onChange={(e) => setQuery(e.target.value)}
       />
       
       {/* Search button*/}
@@ -51,17 +53,15 @@ const GoogleBooksSearch = () => {
         Search
       </Button>
 
-      {/* Display loading message when data is being retrieved */}
       {loading && <p>Loading...</p>}
 
-      {/* Used to display the results */}
+      {/*Used to display the results*/}
       <ListGroup>
         {results.map((book) => (
-          <ListGroup.Item key={book.id}> {/* Each book result is displayed as a ListGroup item */}
-            <strong>{book.volumeInfo.title}</strong> {/* Display the book title */}
-            by {book.volumeInfo.authors?.join(', ')} {/* Display the author*/}
+          <ListGroup.Item key={book.id}>
+            <strong>{book.volumeInfo.title}</strong>
+            by {book.volumeInfo.authors?.join(', ')} 
             <br />
-            {/* Link to more information about the book */}
             <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
               More Info
             </a>
