@@ -9,23 +9,28 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 import axios from 'axios';
-import GoogleBooksSearch from './GoogleBookSearch'; // Import the GoogleBooksSearch component
+import GoogleBooksSearch from './GoogleBookSearch';
 
-// Define the base URL for API calls
+//URL for accessing the EC2
 const API_URL = 'http://ec2-98-84-73-133.compute-1.amazonaws.com/books';
-// Functions to interact with the API
+//Functions to interact with the API
 export const getBooks = () => axios.get(API_URL); // Fetch all books
 export const addBook = async (bookData) => {
   try {
-    const response = await axios.post(API_URL, bookData); // Add a new book
+    //For adding a new book
+    const response = await axios.post(API_URL, bookData);
     return response.data;
   } catch (error) {
     throw new Error(`Error adding book: ${error.response?.data?.message || error.message}`);
   }
 };
-export const updateBook = (id, book) => axios.put(`${API_URL}/${id}`, book); // Update an existing book
-export const deleteBook = (id) => axios.delete(`${API_URL}/${id}`); // Delete a book by ID
-export const getBook = (id) => axios.get(`${API_URL}/${id}`); // Fetch a specific book by ID
+//For updating a book
+export const updateBook = (id, book) => axios.put(`${API_URL}/${id}`, book);
+//For deleting a book
+export const deleteBook = (id) => axios.delete(`${API_URL}/${id}`);
+//For getting a book using it's id
+export const getBook = (id) => axios.get(`${API_URL}/${id}`);
+
 function App() {
   // State variables to manage application data and UI
   const [books, setBooks] = useState([]); // List of all books
@@ -37,44 +42,45 @@ function App() {
     pages: '',
     rating: '',
     price: ''
-  });    
-  const [view, setView] = useState('list'); // Current view ('list', 'form', 'details', 'search')
-  const [editingBookId, setEditingBookId] = useState(null); // ID of the book being edited
-  const [selectedBook, setSelectedBook] = useState(null); // Book selected for details view
-  const [loading, setLoading] = useState(false); // Loading state for asynchronous operations
-  const [error, setError] = useState(''); // Error message state
+  });
+  //Sets the view list 
+  const [view, setView] = useState('list');
+  const [editingBookId, setEditingBookId] = useState(null);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Fetch books from the API when the component mounts
+  //Fetchs the books from the API
   useEffect(() => {
     if (view === 'list') {
       fetchBooks();
     }
   }, [view]);
 
-  // Function to fetch all books and update state
+  //Fetches all books and update the state
   const fetchBooks = async () => {
-    setLoading(true); // Show loading indicator
-    setError(''); // Clear any previous errors
+    setLoading(true);
+    setError('');
     try {
       const response = await getBooks();
-      console.log(response.data); // Log the fetched data for debugging
-      setBooks(response.data); // Update books state with fetched data
+      console.log(response.data);
+      setBooks(response.data);
     } catch (error) {
-      setError('Error fetching books'); // Show error message on failure
+      setError('Error fetching books');
     } finally {
-      setLoading(false); // Hide loading indicator
+      setLoading(false);
     }
   };
 
-  // Handle form input changes
+  //Handles the input changes
   const handleChange = (e) => {
     setBook({ ...book, [e.target.name]: e.target.value });
   };  
 
-  // Handle form submission for adding or updating a book
+  //Handles the form when it is submitted for adding or updating a book
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear any existing error
+    setError('');
 
     const payload = {
       title: book.title || '',
@@ -90,24 +96,28 @@ function App() {
 
     try {
       if (editingBookId) {
-        // If editing, update the book
+        //For editing a book
         await updateBook(editingBookId, book);
         alert('Book updated successfully');
       } else {
-        // If adding, create a new book
+        //For creating a new book
         await addBook(payload);
-        resetForm(); // Clears the form
+        //Resets the form
+        resetForm();
         alert('Book added successfully');
       }
-      fetchBooks(); // Refresh the book list
-      resetForm(); // Clear the form
-      setView('list'); // Switch back to list view
+      //Refresh the list
+      fetchBooks();
+      //reset the form
+      resetForm();
+      //set the view to list
+      setView('list');
     } catch (error) {
-      setError('Error saving book'); // Show error message
+      setError('Error saving book');
     }
   };
 
-  // Reset the form and clear the current editing book ID
+  //Resets the form
   const resetForm = () => {
     setBook({
       title: '',
@@ -121,7 +131,7 @@ function App() {
     setEditingBookId(null);
   };
 
-  // Handle editing of a book (populate the form with existing data)
+  //Handles editing a book
   const handleEdit = (bookToEdit) => {
     setEditingBookId(bookToEdit.id);
     setBook({
@@ -136,37 +146,39 @@ function App() {
     setView('form');
   };    
 
-  // Handle deleting a book
+  //Handles deleting a book
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
       try {
-        await deleteBook(id); // Call API to delete the book
+        await deleteBook(id);
         alert('Book deleted successfully');
-        fetchBooks(); // Refresh the book list
+        //Refresh the book list
+        fetchBooks();
       } catch (error) {
-        setError('Error deleting book'); // Show error message
+        setError('Error deleting book');
       }
     }
   };
 
-  // Show details of the selected book
+  //Show details of the book
   const handleShowDetails = (bookToShow) => {
-    setSelectedBook(bookToShow); // Set the selected book
-    setView('details'); // Switch to details view
+    setSelectedBook(bookToShow);
+    setView('details');
   };
 
-  // Handle navigation and switching views
+  //Handles the navigation and switching between views
   const handleNavLinkClick = (viewName) => {
     setView(viewName);
     if (viewName !== 'search') {
-      setSelectedBook(null); // Clear selected book when switching views
+      //Clear the book
+      setSelectedBook(null);
     }
   };
 
-  // Render the book form
+  //Renders the book form
   const renderForm = () => (
     <Form onSubmit={handleSubmit} className="p-3 border rounded bg-light">
-      {error && <p className="text-danger">{error}</p>} {/* Show error message */}
+      {error && <p className="text-danger">{error}</p>}
       {Object.keys(book).map((key) => (
         <Form.Group className="mb-3" controlId={`form${key}`} key={key}>
           <Form.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</Form.Label>
@@ -186,7 +198,7 @@ function App() {
     </Form>
   );
 
-  // Render the details view
+  //Renders the book details
   const renderDetails = () => (
     <Card className="detail-card m-3 p-3 shadow-sm">
       <Card.Header as="h3" className="text-center text-primary">
@@ -211,7 +223,7 @@ function App() {
     </Card>
   );
   
-  // Render the list of books
+  //Renders the list of books
   const renderList = () => (
     <Table striped bordered hover>
       <thead>
@@ -246,7 +258,6 @@ function App() {
   );
   return (
     <div>
-      {/* Navigation bar */}
       <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
           <Navbar.Brand href="#home">Book Catalogue</Navbar.Brand>
@@ -255,20 +266,20 @@ function App() {
             <Nav className="me-auto">
               <Nav.Link onClick={() => handleNavLinkClick('list')}>Home</Nav.Link>
               <Nav.Link onClick={() => handleNavLinkClick('form')}>Add New Book</Nav.Link>
-              <Nav.Link onClick={() => handleNavLinkClick('search')}>Search Google Books</Nav.Link> {/* New tab */}
+              <Nav.Link onClick={() => handleNavLinkClick('search')}>Search Google Books</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      {/* Loading and error messages */}
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {/* Render different views based on the current state */}
+      {/*Renders the different views based on the current state*/}
       {view === 'form' && renderForm()}
       {view === 'details' && selectedBook && renderDetails()}
       {view === 'list' && renderList()}
-      {view === 'search' && <GoogleBooksSearch />} {/* Render GoogleBooksSearch when the tab is selected */}
+      {/*Renders the GoogleBooksSearch*/}
+      {view === 'search' && <GoogleBooksSearch />}
     </div>
   );
 }
