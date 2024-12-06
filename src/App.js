@@ -32,8 +32,8 @@ export const deleteBook = (id) => axios.delete(`${API_URL}/${id}`);
 export const getBook = (id) => axios.get(`${API_URL}/${id}`);
 
 function App() {
-  // State variables to manage application data and UI
-  const [books, setBooks] = useState([]); // List of all books
+  //State variables to manage application data and the UI
+  const [books, setBooks] = useState([]);
   const [book, setBook] = useState({
     title: '',
     author: '',
